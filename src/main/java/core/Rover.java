@@ -3,6 +3,8 @@
  */
 package core;
 
+import java.util.Arrays;
+
 /**
  * @author AD
  *
@@ -26,6 +28,14 @@ public class Rover {
 	
 	public String getPosition() {
 		return "(" + x + "," + y + ")";
+	}
+	
+	public int getX() {
+		return this.x;
+	}
+	
+	public int getY() {
+		return this.y;
 	}
 	
 	public void moveForward() {
@@ -146,6 +156,116 @@ public class Rover {
 	    	  direction = 'S';
 	          break;
 		}
+	}
+	
+	public String RoverExecuteCmd(char[] cmd) {
+		System.out.println("Initial position and direction: "+this.getPosition()+"	"+this.getDirection());
+		for(char c : cmd){
+			System.out.println("current Cmd: "+c);
+			switch(c) {
+				case 'F' : 
+					this.moveForward();
+					break;
+				case 'B' : 
+					this.moveBackward();
+					break;
+				case 'L' :
+					this.turnLeft();
+					break;
+				case 'R' : 
+					this.turnRight();
+					break;
+			}
+		}
+		System.out.println("Final position and direction: "+this.getPosition()+"	"+this.getDirection());
+		return this.getPosition();
+	}
+	
+	public String calculateNextPosition(char c,char direction) {
+		int possibleX = this.getX();
+		int possibleY = this.getY();
+		switch(direction) { 
+			case 'N':{
+				if(c == 'F'){
+					 if(possibleY == (planetSize/2)) {
+						 possibleY = possibleY * -1;
+			    	  }else {
+			    		  possibleY = possibleY + 1;  
+			    	  }
+				}else if(c == 'B') {
+					 if(possibleY == -(planetSize/2)) {
+						 possibleY = possibleY * -1;
+			    	  }else {
+			    		  possibleY = possibleY - 1;
+			    	  }
+			          break;
+				}
+			}
+	          break;
+			case 'S':
+				if(c == 'F') {
+					if(possibleY == -(planetSize/2)) {
+			    		  possibleY = possibleY * -1;
+			    	  }else {
+			    		  possibleY = possibleY - 1;  
+			    	  }
+				}else if(c == 'B') {
+					if(possibleY == (planetSize/2)) {
+			    		  possibleY = possibleY * -1;
+			    	  }else {
+			    		  possibleY = possibleY - 1;
+			    	  }
+				}
+	          break;   
+			case 'E':
+				if(c == 'F') {
+				 if(possibleX == (planetSize/2)) {
+		    		  possibleX = possibleX * -1;
+		    	  }else {
+		    		  possibleX = possibleX + 1;  
+		    	  }
+				}else if(c == 'B') {
+					 if(possibleX == -(planetSize/2)) {
+			    		  possibleX = possibleX * -1;
+			    	  }else {
+			    		  possibleX = possibleX - 1;
+			    	  }
+				}
+	          break;   
+			case 'W':
+				if(c == 'F') {
+					 if(possibleX == -(planetSize/2)) {
+			    		  possibleX = possibleX * -1;
+			    	  }else {
+			    		  possibleX = possibleX - 1;
+			    	  }
+				}else if(c == 'B') {
+					 if(possibleX == (planetSize/2)) {
+			    		  possibleX = possibleX * -1;
+			    	  }else {
+			    		  possibleX = possibleX - 1;
+			    	  }
+				}
+	          break;
+		}
+		return  "(" + possibleX + "," + possibleY + ")";
+	}
+	
+	
+	public String RoverObstacleDetection(char[] cmd,String[] obstacles) {
+		String trickyposition="";
+		for(char c : cmd) {
+			String futurePos = this.calculateNextPosition(c, this.getDirection());
+			if(Arrays.asList(obstacles).contains(futurePos)) {
+				trickyposition = futurePos;
+				break;
+			}else {
+				char[] cmds= new char[]{c};
+				this.RoverExecuteCmd(cmds);
+			}
+		}
+		System.out.println("Obstacle detected at position : "+trickyposition);
+		return trickyposition;
 	}
 	
 }
